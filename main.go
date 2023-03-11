@@ -35,17 +35,21 @@ func update(window draw.Window) {
 	from := mouse.Add(vector2.FromRotation(math.Pi / 4).Multiply(14))
 	shapes.DrawArrow(window, from, mouse, draw.White)
 
-	ray := vector2.Ray{Origin: center, Dir: vector2.FromRotation(math.Pi / 6)}
+	ray := vector2.Ray{Origin: origin, Dir: mouse.Subtract(origin)}
+	shapes.DrawRay(window, ray, draw.Red)
 
-	shapes.DrawRay(window, ray, draw.Green)
+	bb := vector2.Init(vector2.FromPoint(0, 0), screen)
 
-	ray2 := vector2.Ray{Origin: origin, Dir: mouse.Subtract(origin)}
-	shapes.DrawRay(window, ray2, draw.Red)
-
-	in, ok := ray.Intersect(ray2)
+	v, ok := bb.Intersect(ray)
 	if ok {
-		x, y := in.Point()
+		x, y := v.Point()
 		window.FillEllipse(x-5, y-5, 10, 10, draw.LightPurple)
+
+		for _, click := range window.Clicks() {
+			if click.Button == draw.RightButton {
+				fmt.Printf("%+v", v)
+			}
+		}
 	}
 
 	for _, click := range window.Clicks() {
