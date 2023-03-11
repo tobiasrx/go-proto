@@ -36,7 +36,6 @@ func update(window draw.Window) {
 	shapes.DrawArrow(window, from, mouse, draw.White)
 
 	ray := vector2.Ray{Origin: origin, Dir: mouse.Subtract(origin)}
-	shapes.DrawRay(window, ray, draw.Red)
 
 	bb := vector2.Init(vector2.FromPoint(0, 0), screen)
 
@@ -44,6 +43,8 @@ func update(window draw.Window) {
 	if ok {
 		x, y := v.Point()
 		window.FillEllipse(x-5, y-5, 10, 10, draw.LightPurple)
+		ox, oy := origin.Point()
+		window.DrawLine(ox, oy, x, y, draw.White)
 
 		for _, click := range window.Clicks() {
 			if click.Button == draw.RightButton {
