@@ -9,21 +9,30 @@ func (r Ray) At(c float64) Vector {
 	return r.Origin.Add(r.Dir.Multiply(c))
 }
 
-func (r Ray) Intersect(r2 Ray) (float64, bool) {
+func (r Ray) Intersect(r2 Ray) (Vector, bool) {
 	dot := r.Dir.Dot(r2.Dir)
 	denom := r.Dir.LengthSqr()*r2.Dir.LengthSqr() - dot*dot
 
 	if denom == 0 {
-		return 0, false
+		return Vector{}, false
 	}
 
 	n1 := r.Origin.Dot(r2.Dir) - r2.Origin.Dot(r2.Dir)
-	n1 *= dot
-
 	n2 := r.Origin.Dot(r.Dir) - r2.Origin.Dot(r.Dir)
-	n2 *= r2.Dir.LengthSqr()
 
-	num := n1 - n2
+	num := n1*dot - n2*r2.Dir.LengthSqr()
 	c := num / denom
-	return c, true
+
+	if c < 0 || c > 1 {
+		return Vector{}, false
+	}
+
+	c2 := n1 + c*dot
+	c2 /= r2.Dir.LengthSqr()
+
+	if c2 < 0 || c2 > 1 {
+		return Vector{}, false
+	}
+
+	return r.At(c), true
 }

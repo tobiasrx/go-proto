@@ -7,6 +7,6 @@ import (
 
 func DrawRay(window draw.Window, ray vector2.Ray, color draw.Color) {
 	from := ray.Origin
-	to := ray.Origin.Add(ray.Dir.Normalize().Multiply(200))
+	to := ray.Origin.Add(ray.Dir)
 	DrawArrow(window, from, to, color)
 }
