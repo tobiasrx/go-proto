@@ -7,7 +7,7 @@ type BoundingBox struct {
 	rayLeft   Ray
 }
 
-func Init(topLeft, bottomRight Vector) BoundingBox {
+func InitBoundingBox(topLeft, bottomRight Vector) BoundingBox {
 	diff := bottomRight.Subtract(topLeft)
 	rayTop := Ray{Origin: topLeft, Dir: Vector{X: diff.X, Y: 0}}
 	rayRight := Ray{Origin: bottomRight, Dir: Vector{X: 0, Y: -diff.Y}}

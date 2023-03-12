@@ -17,6 +17,7 @@ func radToDegrees(r float64) float64 {
 	return r / math.Pi * 180
 }
 
+var rotation = math.Pi / 4
 var origin vector2.Vector = vector2.FromPoint(0, 0)
 
 func update(window draw.Window) {
@@ -24,21 +25,14 @@ func update(window draw.Window) {
 	center := screen.Divide(2)
 	mouse := vector2.FromPoint(window.MousePosition())
 
-	dir := mouse.Subtract(center)
-	mouseInCircle := dir.LengthSqr() < 20*20
-
-	color := draw.DarkRed
-	if mouseInCircle {
-		color = draw.Red
-	}
 	window.ShowCursor(false)
 	from := mouse.Add(vector2.FromRotation(math.Pi / 4).Multiply(14))
 	shapes.DrawArrow(window, from, mouse, draw.White)
 
-	di := vector2.FromRotation(math.Pi / 4).Multiply(10000)
-	ray := vector2.Ray{Origin: origin.Subtract(di.Divide(2)), Dir: di}
+	di := vector2.FromRotation(rotation)
+	ray := vector2.Ray{Origin: origin, Dir: di}
 
-	bb := vector2.Init(vector2.FromPoint(0, 0), screen)
+	bb := vector2.InitBoundingBox(vector2.FromPoint(0, 0), screen)
 
 	vecs := bb.Intersect(ray)
 	for _, vec := range vecs {
@@ -56,24 +50,29 @@ func update(window draw.Window) {
 		if click.Button == draw.LeftButton {
 			origin = vector2.FromPoint(click.X, click.Y)
 		}
-		if click.Button == draw.RightButton {
-			fmt.Printf("%v", vecs)
-		}
+	}
+
+	if window.IsMouseDown(draw.RightButton) {
+		rotation += math.Pi / 32
 	}
 
 	window.DrawScaledText(fmt.Sprintf("Angle %f", radToDegrees(mouse.Subtract(center).Angle())), 0, 0, 1.6, draw.RGB(0.2, 0.5, 0.3))
 
-	centerX, centerY := center.Point()
-	window.FillEllipse(centerX-20, centerY-20, 40, 40, color)
-	window.DrawEllipse(centerX-20, centerY-20, 40, 40, draw.White)
-	if mouseInCircle {
-		window.DrawScaledText("Close!", centerX-40, centerY+25, 1.6, draw.RGB(0.2, 0.5, 0.3))
+	circle := vector2.Circle{Origin: vector2.Vector{X: 10, Y: -80}, Radius: 200}
+	circle2 := vector2.Circle{Origin: vector2.Vector{X: 10, Y: 80}, Radius: 200}
+	shapes.DrawCircle(window, circle2, draw.Red)
+
+	vecs = circle.Intersect(ray)
+
+	for _, vec := range vecs {
+		fmt.Printf("%v", vec)
+		x, y := vec.Point()
+		window.FillEllipse(x-5, y-5, 10, 10, draw.LightPurple)
 	}
 
 	// check all mouse clicks that happened during this frame
 	for _, click := range window.Clicks() {
-		dx, dy := click.X-centerX, click.Y-centerY
-		squareDist := dx*dx + dy*dy
+		squareDist := vector2.FromPoint(click.X, click.Y).Subtract(center).LengthSqr()
 		if squareDist <= 20*20 {
 			// close the window and end the application
 			window.Close()
