@@ -58,7 +58,7 @@ func update(window draw.Window) {
 
 	shapes.DrawRay(window, ray, draw.LightBlue)
 
-	window.DrawScaledText(fmt.Sprintf("Angle %f", radToDegrees(mouse.Subtract(center).Angle())), 0, 0, 1.6, draw.RGB(0.2, 0.5, 0.3))
+	window.DrawScaledText(fmt.Sprintf("Angle %f", radToDegrees(ray.Dir.Angle())), 0, 0, 1.6, draw.RGB(0.2, 0.5, 0.3))
 
 	circle := vector2.Circle{Origin: center, Radius: 200}
 	shapes.DrawCircle(window, circle, draw.Red)
@@ -68,14 +68,5 @@ func update(window draw.Window) {
 	for _, vec := range vecs {
 		x, y := vec.Point()
 		window.FillEllipse(x-5, y-5, 10, 10, draw.LightPurple)
-	}
-
-	// check all mouse clicks that happened during this frame
-	for _, click := range window.Clicks() {
-		squareDist := vector2.FromPoint(click.X, click.Y).Subtract(center).LengthSqr()
-		if squareDist <= 20*20 {
-			// close the window and end the application
-			window.Close()
-		}
 	}
 }

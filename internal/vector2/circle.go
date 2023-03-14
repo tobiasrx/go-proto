@@ -9,6 +9,10 @@ type Circle struct {
 	Radius float64
 }
 
+func (c Circle) Collide(c2 Circle) bool {
+	return c.Origin.Subtract(c2.Origin).LengthSqr() <= (c.Radius+c2.Radius)*(c.Radius+c2.Radius)
+}
+
 func (c Circle) Intersect(r Ray) []Vector {
 	b := r.Origin.Dot(r.Dir) - r.Dir.Dot(c.Origin)
 	num1 := b * b
