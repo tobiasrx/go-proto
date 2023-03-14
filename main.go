@@ -17,8 +17,8 @@ func radToDegrees(r float64) float64 {
 	return r / math.Pi * 180
 }
 
-var rotation = math.Pi / 4
-var origin vector2.Vector = vector2.FromPoint(0, 0)
+var rotation = 0.0
+var origin vector2.Vector = vector2.FromPoint(0, 25)
 
 func update(window draw.Window) {
 	screen := vector2.FromPoint(window.Size())
@@ -29,7 +29,7 @@ func update(window draw.Window) {
 	from := mouse.Add(vector2.FromRotation(math.Pi / 4).Multiply(14))
 	shapes.DrawArrow(window, from, mouse, draw.White)
 
-	di := vector2.FromRotation(rotation)
+	di := vector2.FromRotation(rotation).Multiply(200)
 	ray := vector2.Ray{Origin: origin, Dir: di}
 
 	bb := vector2.InitBoundingBox(vector2.FromPoint(0, 0), screen)
@@ -56,16 +56,16 @@ func update(window draw.Window) {
 		rotation += math.Pi / 32
 	}
 
+	shapes.DrawRay(window, ray, draw.LightBlue)
+
 	window.DrawScaledText(fmt.Sprintf("Angle %f", radToDegrees(mouse.Subtract(center).Angle())), 0, 0, 1.6, draw.RGB(0.2, 0.5, 0.3))
 
-	circle := vector2.Circle{Origin: vector2.Vector{X: 10, Y: -80}, Radius: 200}
-	circle2 := vector2.Circle{Origin: vector2.Vector{X: 10, Y: 80}, Radius: 200}
-	shapes.DrawCircle(window, circle2, draw.Red)
+	circle := vector2.Circle{Origin: center, Radius: 200}
+	shapes.DrawCircle(window, circle, draw.Red)
 
 	vecs = circle.Intersect(ray)
 
 	for _, vec := range vecs {
-		fmt.Printf("%v", vec)
 		x, y := vec.Point()
 		window.FillEllipse(x-5, y-5, 10, 10, draw.LightPurple)
 	}
