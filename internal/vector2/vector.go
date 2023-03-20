@@ -55,6 +55,10 @@ func (v Vector) Normalize() Vector {
 	return v.Divide(length)
 }
 
+func (v Vector) Normal() Vector {
+	return Vector{X: -v.Y, Y: v.X}
+}
+
 func (v Vector) Angle() float64 {
 	return math.Atan2(v.Y, v.X)
 }
