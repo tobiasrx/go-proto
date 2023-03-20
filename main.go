@@ -17,28 +17,28 @@ func radToDegrees(r float64) float64 {
 }
 
 var body = physics.Body{
-	Pos:    vector2.FromPoint(50, 100),
-	Vel:    vector2.FromPoint(5, 0),
-	Mass:   5.0,
+	Pos:    vector2.FromPoint(50, 101),
+	Vel:    vector2.FromPoint(12, 0),
+	Mass:   1.0,
 	Radius: 50,
 }
 
 var body2 = physics.Body{
 	Pos:    vector2.FromPoint(400, 100),
-	Vel:    vector2.FromPoint(1, 0),
+	Vel:    vector2.FromPoint(0, 0),
 	Mass:   1.0,
-	Radius: 20,
+	Radius: 50,
 }
 
 func update(window draw.Window) {
 	body.Draw(window)
 	body2.Draw(window)
 
-	if window.WasKeyPressed(draw.KeySpace) {
-		body.Step(window)
-		body2.Step(window)
-		body.Collide(&body2)
-	}
+	// if window.WasKeyPressed(draw.KeySpace) {
+	body.Step(window)
+	body2.Step(window)
+	body.Collide(&body2)
+	// }
 
 	// window.DrawScaledText(fmt.Sprintf("Angle"), 0, 0, 1.6, draw.RGB(0.2, 0.5, 0.3))
 }

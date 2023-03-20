@@ -1,8 +1,6 @@
 package physics
 
 import (
-	"fmt"
-
 	"example.com/proto/internal/shapes"
 	"example.com/proto/internal/vector2"
 	"github.com/gonutz/prototype/draw"
@@ -36,26 +34,18 @@ func (b *Body) Step(window draw.Window) {
 }
 
 func (b *Body) Collide(b2 *Body) {
+	center := b2.Pos.Subtract(b.Pos).Normalize()
+	ortho := center.Normal()
+
 	if b.Pos.Subtract(b2.Pos).LengthSqr() < (b.Radius+b2.Radius)*(b.Radius+b2.Radius) {
-		v1, v2 := b.Vel.Length(), b2.Vel.Length()
+		v1, v2 := center.Dot(b.Vel), center.Dot(b2.Vel)
 		st := 2 * (b.Mass*v1 + b2.Mass*v2) / (b.Mass + b2.Mass)
 		v1p := st - v1
 		v2p := st - v2
-
-		fmt.Printf("%v\n", v1p-v1)
-		fmt.Printf("%v\n", v2p-v2)
-
-		if v1p-v1 < 0 || v1p == 0 {
-			b.Vel = b.Vel.Divide(v1).Multiply(v1p)
-		} else if v1p-v1 > 0 {
-			b.Vel = b.Vel.Divide(v1).Multiply(-v1p)
-		}
-		if v2p-v2 < 0 {
-			b2.Vel = b2.Vel.Divide(v2).Multiply(-v2p)
-		} else if v2p-v2 > 0 {
-			b2.Vel = b2.Vel.Divide(v2).Multiply(v2p)
-		}
-		b.Pos = b2.Pos.Add(b.Pos.Subtract(b2.Pos).Normalize().Multiply(b.Radius + b2.Radius))
+		v1o := ortho.Dot(b.Vel)
+		v2o := ortho.Dot(b2.Vel)
+		b.Vel = center.Multiply(v1p).Add(ortho.Multiply(v1o))
+		b2.Vel = center.Multiply(v2p).Add(ortho.Multiply(v2o))
 	}
 }
 
@@ -64,6 +54,6 @@ func (b Body) Draw(window draw.Window) {
 		Origin: b.Pos,
 		Radius: b.Radius,
 	}
-	shapes.DrawCircle(window, circle, draw.LightBlue)
+	shapes.DrawCircle(window, circle, draw.LightPurple)
 	shapes.DrawArrow(window, b.Pos, b.Pos.Add(b.Vel.Multiply(b.Radius).Divide(2)), draw.White)
 }
