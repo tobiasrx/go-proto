@@ -27,7 +27,7 @@ var body2 = physics.Body{
 	Pos:    vector2.FromPoint(400, 100),
 	Vel:    vector2.FromPoint(1, 0),
 	Mass:   1.0,
-	Radius: 50,
+	Radius: 20,
 }
 
 func update(window draw.Window) {
