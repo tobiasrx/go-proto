@@ -10,6 +10,11 @@ import (
 func DrawArrow(window draw.Window, from, to vector2.Vector, color draw.Color) {
 	x, y := from.Point()
 	u, v := to.Point()
+
+	if x == u && y == v {
+		return
+	}
+
 	window.DrawLine(x, y, u, v, color)
 
 	vec := from.Subtract(to)
