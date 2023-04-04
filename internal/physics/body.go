@@ -1,9 +1,6 @@
 package physics
 
 import (
-	"fmt"
-	"time"
-
 	"example.com/proto/internal/shapes"
 	"example.com/proto/internal/vector2"
 	"github.com/gonutz/prototype/draw"
@@ -36,32 +33,24 @@ func (b *Body) Step(window draw.Window) {
 	}
 }
 
-func (b *Body) Collide(b2 *Body) {
-	center := b2.Pos.Subtract(b.Pos).Normalize()
-	ortho := center.Normal()
+func (b *Body) Collide(b2 *Body, window draw.Window) {
 
 	if b.Pos.Subtract(b2.Pos).LengthSqr() < (b.Radius+b2.Radius)*(b.Radius+b2.Radius) {
-		v1, v2 := center.Dot(b.Vel), center.Dot(b2.Vel)
+		collison := b2.Pos.Subtract(b.Pos)
+		coll := collison.Normalize()
+		ortho := coll.Normal()
+		v1, v2 := coll.Dot(b.Vel), coll.Dot(b2.Vel)
 		st := 2 * (b.Mass*v1 + b2.Mass*v2) / (b.Mass + b2.Mass)
 		v1p := st - v1
 		v2p := st - v2
 		v1o := ortho.Dot(b.Vel)
 		v2o := ortho.Dot(b2.Vel)
 
-		fmt.Println(time.Now())
-		fmt.Printf("%v\n", center)
-		fmt.Printf("%v\n", ortho)
-		fmt.Printf("%v %v\n", b.Pos, b.Vel.Length())
-		fmt.Printf("%v %v\n", b2.Pos, b.Vel.Length())
-		fmt.Printf("%v %v\n", b.Vel, b.Vel.Length())
-		fmt.Printf("%v %v\n", b2.Vel, b2.Vel.Length())
-		b.Vel = center.Multiply(v1p).Add(ortho.Multiply(v1o))
-		b2.Vel = center.Multiply(v2p).Add(ortho.Multiply(v2o))
-
-		fmt.Println(v1, v2, v1p, v2p, v1o, v2o, v1p+v1o, v2p+v2o)
-		fmt.Printf("%v %v\n", b.Vel, b.Vel.Length())
-		fmt.Printf("%v %v\n", b2.Vel, b2.Vel.Length())
-		fmt.Println("...")
+		b.Vel = coll.Multiply(v1p).Add(ortho.Multiply(v1o))
+		b2.Vel = coll.Multiply(v2p).Add(ortho.Multiply(v2o))
+		mid := b.Pos.Add(collison.Divide(2))
+		b.Pos = mid.Subtract(coll.Multiply(b.Radius))
+		b2.Pos = mid.Add(coll.Multiply(b2.Radius))
 	}
 }
 

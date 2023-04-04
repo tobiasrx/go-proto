@@ -15,6 +15,10 @@ func FromRotation(alpha float64) Vector {
 	return Vector{X: 1, Y: 0}.RotateAndNormalize(alpha)
 }
 
+func Null() Vector {
+	return Vector{X: 0, Y: 0}
+}
+
 func (v Vector) Point() (int, int) {
 	return int(math.Round(v.X)), int(math.Round(v.Y))
 }
